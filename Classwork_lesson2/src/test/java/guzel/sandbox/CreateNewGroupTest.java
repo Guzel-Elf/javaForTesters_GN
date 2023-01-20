@@ -11,36 +11,63 @@ import org.testng.annotations.Test;
 
 
 public class CreateNewGroupTest {
-  private WebDriver driver;
-  JavascriptExecutor js;
-  @BeforeMethod
-  public void setUp() {
-    driver = new FirefoxDriver();
-    js = (JavascriptExecutor) driver;
-    driver.get("http://localhost/addressbook/group.php");
-    driver.manage().window().setSize(new Dimension(1440, 900));
-    driver.findElement(By.name("user")).sendKeys("admin");
-    driver.findElement(By.name("pass")).click();
-    driver.findElement(By.name("pass")).sendKeys("secret");
-    driver.findElement(By.cssSelector("input:nth-child(7)")).click();
-  }
-  @AfterMethod
-  public void tearDown() {
-    driver.quit();
+    private WebDriver driver;
+    JavascriptExecutor js;
 
-  }
-  @Test
-  public void testGroupCreatation() {
+    @BeforeMethod
+    public void setUp() {
+        driver = new FirefoxDriver();
+        js = (JavascriptExecutor) driver;
+        login("admin", "secret");
+    }
 
-    driver.findElement(By.linkText("groups")).click();
-    driver.findElement(By.name("new")).click();
-    driver.findElement(By.name("group_name")).click();
-    driver.findElement(By.name("group_name")).sendKeys("Tst1");
-    driver.findElement(By.name("group_header")).click();
-    driver.findElement(By.name("group_header")).sendKeys("Tst2");
-    driver.findElement(By.name("group_footer")).click();
-    driver.findElement(By.name("group_footer")).sendKeys("Tst3");
-    driver.findElement(By.name("submit")).click();
-    driver.findElement(By.linkText("group page")).click();
-  }
+    private void login(String username, String password) {
+        driver.get("http://localhost/addressbook/group.php");
+        driver.manage().window().setSize(new Dimension(1440, 900));
+        driver.findElement(By.name("user")).sendKeys( username);
+        driver.findElement(By.name("pass")).click();
+        driver.findElement(By.name("pass")).sendKeys(password);
+        driver.findElement(By.cssSelector("input:nth-child(7)")).click();
+    }
+
+    @AfterMethod
+    public void tearDown() {
+        driver.quit();
+
+    }
+
+    @Test
+    public void testGroupCreatation() {
+
+        gotoGroupPage();
+        initGroupCreation();
+        fillGroupForm(new GroupData("Tst1", "Tst2", "Tst3"));
+        submitGroupCreation();
+        returnToGroupPage();
+    }
+
+    private void returnToGroupPage() {
+        driver.findElement(By.linkText("group page")).click();
+    }
+
+    private void submitGroupCreation() {
+        driver.findElement(By.name("submit")).click();
+    }
+
+    private void fillGroupForm(GroupData groupData) {
+        driver.findElement(By.name("group_name")).click();
+        driver.findElement(By.name("group_name")).sendKeys(groupData.name());
+        driver.findElement(By.name("group_header")).click();
+        driver.findElement(By.name("group_header")).sendKeys(groupData.header());
+        driver.findElement(By.name("group_footer")).click();
+        driver.findElement(By.name("group_footer")).sendKeys(groupData.footer());
+    }
+
+    private void initGroupCreation() {
+        driver.findElement(By.name("new")).click();
+    }
+
+    private void gotoGroupPage() {
+        driver.findElement(By.linkText("groups")).click();
+    }
 }
