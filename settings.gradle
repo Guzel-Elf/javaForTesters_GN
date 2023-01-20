@@ -1,2 +1,3 @@
 rootProject.name = 'javaForTesters_GN'
+include 'Homework_lesson1'
 
